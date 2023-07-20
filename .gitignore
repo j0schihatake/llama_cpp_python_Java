@@ -24,3 +24,4 @@ hs_err_pid*
 replay_pid*
 .idea/
 llama_cpp_python_java.iml
+target/
