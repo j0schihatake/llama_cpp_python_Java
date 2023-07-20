@@ -1,33 +1,33 @@
 package com.j0schi.llama_cpp_python_java.utils;
-import org.python.core.*;
+
 import org.python.util.PythonInterpreter;
+import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
+@Component
 public class PythonExecutor {
 
-    public String runLlm(String message, int maxTokens, String[] stop, boolean echo) {
+    public String executePythonCode(String question) {
         PythonInterpreter interpreter = new PythonInterpreter();
-        interpreter.exec("from llm_api import llm");
 
-        PyObject llmFunction = interpreter.get("llm");
-        if (llmFunction != null && llmFunction.isCallable()) {
-            // Создаем объекты PyObjects для аргументов
-            PyObject args = new PyTuple(
-                    new PyString(message),
-                    new PyInteger(maxTokens),
-                    new PyList(Arrays.asList(stop)),
-                    Py.java2py(echo)
-            );
+        // Запустите код Python из main.py
+        String pythonCode = "from llama_cpp import Llama\n" +
+                "print('Loading model...')\n" +
+                "llm = Llama(model_path='/home/llama-cpp-user/model/vicuna-7b-v1.3-superhot-8k.ggmlv3.q5_K_M.bin')\n" +
+                "print('Model loaded!')\n" +
+                "stream = llm(\"" + question + "\", max_tokens=300, stop=['\\n', ' Q:'], echo=True)\n" +
+                "result = ' '.join(stream)\n" +
+                "result";
 
-            PyObject result = llmFunction.__call__(args);
+        interpreter.exec(pythonCode);
 
-            if (result != null) {
-                return result.toString();
-            }
-        }
+        // Получите результат выполнения кода Python
+        String result = interpreter.get("result").toString();
 
-        return "Error: Failed to execute llm()";
+        interpreter.close();
+
+        return result;
     }
 }
+
+
 
