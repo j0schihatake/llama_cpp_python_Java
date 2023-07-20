@@ -12,8 +12,14 @@ public class PythonExecutor {
     public void llamaInit() {
         PythonInterpreter interpreter = new PythonInterpreter();
 
+        // Добавляем путь к директории с модулем llama_cpp в sys.path
+        String pythonCode = "import sys\n"
+                + "sys.path.append('~/llama.cpp')"; // Замените /path/to/llama_cpp на реальный путь
+
+        interpreter.exec(pythonCode);
+
         // Загружаем Python-модуль llama_cpp и получаем Python-объект с функцией llm
-        String pythonCode = "from llama_cpp import llm";
+        pythonCode = "from llama_cpp import llm";
         interpreter.exec(pythonCode);
 
         // Получаем Python-функцию llm
