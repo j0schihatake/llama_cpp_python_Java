@@ -1,50 +1,49 @@
 package com.j0schi.llama_cpp_python_java.utils;
 
-import jakarta.annotation.PostConstruct;
 import org.python.core.*;
 import org.python.util.PythonInterpreter;
 
 public class PythonExecutor {
 
-    private PyObject llm;
+    private PyObject llamaModule;
 
-    @PostConstruct
-    public void llamaInit() {
+    public PyObject llamaInit() {
+
         PythonInterpreter interpreter = new PythonInterpreter();
 
-        // Добавляем путь к директории с модулем llama_cpp в sys.path
+        // Добавляем путь к директории с модулем llama.py в sys.path
         String pythonCode = "import sys\n"
-                + "sys.path.append('~/llama.cpp')"; // Замените /path/to/llama_cpp на реальный путь
+                + "sys.path.append('/home/llama-cpp-user/server/src')"; // Замените /path/to/directory на путь к директории с llama.py
 
         interpreter.exec(pythonCode);
 
-        // Загружаем Python-модуль llama_cpp и получаем Python-объект с функцией llm
-        pythonCode = "from llama_cpp import llm";
+        // Загружаем модуль llama и получаем его объект
+        pythonCode = "from llama import Llama\n"
+                + "llama = Llama('/home/llama-cpp-user/model/vicuna-7b-v1.3-superhot-8k.ggmlv3.q5_K_M.bin')"; // Замените /path/to/model на путь к модели
         interpreter.exec(pythonCode);
 
-        // Получаем Python-функцию llm
-        PyObject llmFunction = interpreter.get("llm");
-
-        // Сохраняем Python-функцию llm в поле llm
-        this.llm = llmFunction;
+        // Получаем объект модуля llama и сохраняем его
+        PyObject llamaModule = interpreter.get("llama");
 
         interpreter.close();
+
+        return llamaModule;
     }
 
     public String executeQuestion(String question) {
-        // Проверяем, что Python-функция llm была инициализирована
-        if (llm == null) {
-            throw new IllegalStateException("Python function llm is not initialized. Call llamaInit() first.");
+        // Проверяем, что объект модуля llama был инициализирован
+        if (llamaModule == null) {
+            llamaModule = llamaInit();
         }
 
-        // Вызываем Python-функцию llm для выполнения вопроса
-        PyObject pyResponse = llm.__call__(new PyString(question), new PyInteger(300), new PyTuple(new PyString("\n"), new PyString(" Q:")), Py.True);
+        // Получаем объект функции llm из модуля llama
+        PyObject llmFunction = llamaModule.__findattr__("llm");
+
+        // Вызываем функцию llm с указанными аргументами
+        PyObject pyResponse = llmFunction.__call__(new PyUnicode(question), new PyLong(300), new PyTuple(new PyList(), new PyList()), Py.True);
 
         // Конвертируем результат в строку и возвращаем его
         String response = pyResponse.toString();
         return response;
     }
 }
-
-
-
