@@ -16,7 +16,7 @@ public class TalkController {
     @PostMapping("/talk")
     public ResponseEntity<String> llama(@RequestBody MessageRequest request) {
         String message = request.getMessage();
-        String response = pythonExecutor.executePythonCode(message);
+        String response = pythonExecutor.executeQuestion(message);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

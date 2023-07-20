@@ -1,54 +1,44 @@
 package com.j0schi.llama_cpp_python_java.utils;
 
 import jakarta.annotation.PostConstruct;
+import org.python.core.*;
 import org.python.util.PythonInterpreter;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PythonExecutor {
 
-    private Llama llm;
+    private PyObject llm;
 
     @PostConstruct
-    public void llamaInit(){
-        String modelName = "vicuna-7b-v1.3-superhot-8k.ggmlv3.q5_K_M.bin";
+    public void llamaInit() {
         PythonInterpreter interpreter = new PythonInterpreter();
 
-        // Запустите код Python из main.py
-        String pythonCode =
-                "from llama_cpp import Llama\n" +
-                "print('Loading model...')\n" +
-                "llm = Llama(model_path='/home/llama-cpp-user/model/" + modelName + "')\n" +
-                "print('Model loaded!')\n";
-
+        // Загружаем Python-модуль llama_cpp и получаем Python-объект с функцией llm
+        String pythonCode = "from llama_cpp import llm";
         interpreter.exec(pythonCode);
 
-        // Получите результат выполнения кода Python
-        String result = interpreter.get("result").toString();
+        // Получаем Python-функцию llm
+        PyObject llmFunction = interpreter.get("llm");
+
+        // Сохраняем Python-функцию llm в поле llm
+        this.llm = llmFunction;
 
         interpreter.close();
     }
 
-    public String executePythonCode(String question) {
-        PythonInterpreter interpreter = new PythonInterpreter();
+    public String executeQuestion(String question) {
+        // Проверяем, что Python-функция llm была инициализирована
+        if (llm == null) {
+            throw new IllegalStateException("Python function llm is not initialized. Call llamaInit() first.");
+        }
 
-        // Запустите код Python из main.py
-        String pythonCode = "from llama_cpp import Llama\n" +
-                "print('Loading model...')\n" +
-                "llm = Llama(model_path='/home/llama-cpp-user/model/vicuna-7b-v1.3-superhot-8k.ggmlv3.q5_K_M.bin')\n" +
-                "print('Model loaded!')\n" +
-                "stream = llm(\"" + question + "\", max_tokens=300, stop=['\\n', ' Q:'], echo=True)\n" +
-                "result = ' '.join(stream)\n" +
-                "result";
+        // Вызываем Python-функцию llm для выполнения вопроса
+        PyObject pyResponse = llm.__call__(new PyString(question), new PyInteger(300), new PyTuple(new PyString("\n"), new PyString(" Q:")), Py.True);
 
-        interpreter.exec(pythonCode);
-
-        // Получите результат выполнения кода Python
-        String result = interpreter.get("result").toString();
-
-        interpreter.close();
-
-        return result;
+        // Конвертируем результат в строку и возвращаем его
+        String response = pyResponse.toString();
+        return response;
     }
 }
 
