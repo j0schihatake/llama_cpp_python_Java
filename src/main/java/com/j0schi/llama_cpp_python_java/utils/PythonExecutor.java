@@ -13,13 +13,13 @@ public class PythonExecutor {
 
         // Добавляем путь к директории с модулем llama.py в sys.path
         String pythonCode = "import sys\n"
-                + "sys.path.append('/home/llama-cpp-user/server/src')"; // Замените /path/to/directory на путь к директории с llama.py
+                + "sys.path.append('')"; // Замените /path/to/directory на путь к директории с llama.py
 
         interpreter.exec(pythonCode);
 
         // Загружаем модуль llama и получаем его объект
         pythonCode = "from llama import Llama\n"
-                + "llama = Llama('/home/llama-cpp-user/model/vicuna-7b-v1.3-superhot-8k.ggmlv3.q5_K_M.bin')"; // Замените /path/to/model на путь к модели
+                + "llama = Llama('/home/llama-cpp-user/model/vicuna-7b-v1.3-superhot-8k.ggmlv3.q5_K_M.bin')";
         interpreter.exec(pythonCode);
 
         // Получаем объект модуля llama и сохраняем его
