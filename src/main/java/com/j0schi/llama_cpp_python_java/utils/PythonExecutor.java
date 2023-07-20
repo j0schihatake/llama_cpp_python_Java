@@ -3,9 +3,7 @@ package com.j0schi.llama_cpp_python_java.utils;
 import jakarta.annotation.PostConstruct;
 import org.python.core.*;
 import org.python.util.PythonInterpreter;
-import org.springframework.stereotype.Component;
 
-@Component
 public class PythonExecutor {
 
     private PyObject llm;
