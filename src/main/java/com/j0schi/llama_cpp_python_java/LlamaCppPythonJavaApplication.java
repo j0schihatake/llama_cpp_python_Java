@@ -9,5 +9,4 @@ public class LlamaCppPythonJavaApplication {
     public static void main(String[] args) {
         SpringApplication.run(LlamaCppPythonJavaApplication.class, args);
     }
-
 }
