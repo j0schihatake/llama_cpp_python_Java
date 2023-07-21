@@ -44,17 +44,21 @@ public class LlamaService {
     }
 
 
-    public String executePostRequest(String message, String url) throws JsonProcessingException {
-
-        MessageRequest messageDto = new MessageRequest();
-        messageDto.setMessage(message);
+    /**
+     * Пост запрос с текстом, возвращает предложение целиком.
+     * @param message
+     * @param url
+     * @return
+     * @throws JsonProcessingException
+     */
+    public String executePostRequest(MessageRequest message, String url) throws JsonProcessingException {
 
         // Устанавливаем заголовки запроса (Content-Type: application/json)
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         // Преобразуем объект в JSON строку
-        String jsonBody = objectMapper.writeValueAsString(messageDto);
+        String jsonBody = objectMapper.writeValueAsString(message);
 
         // Создаем HttpEntity с JSON телом запроса и заголовками
         HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);

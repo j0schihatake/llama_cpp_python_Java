@@ -24,7 +24,6 @@ public class TalkController {
 
     @PostMapping("/talk")
     public ResponseEntity<String> llama(@RequestBody MessageRequest request) throws JsonProcessingException {
-        String message = request.getMessage();
-        return new ResponseEntity<>(llamaService.executePostRequest(message, apiUrl), HttpStatus.OK);
+        return new ResponseEntity<>(llamaService.executePostRequest(request, apiUrl), HttpStatus.OK);
     }
 }
