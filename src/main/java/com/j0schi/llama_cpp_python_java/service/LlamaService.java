@@ -71,9 +71,10 @@ public class LlamaService {
             // Получаем тело ответа
             response = responseEntity.getBody();
 
-            response = assembleString(response);
+            if(response != null)
+                response = assembleString(response);
 
-        } while (!containsLetters(response));
+        } while (response == null || !containsLetters(response));
 
         log.info(response);
 
