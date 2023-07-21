@@ -7,5 +7,5 @@ public class MessageRequest {
 
     private String message;
 
-    private int maxTokens;
+    private int maxTokens = 500;
 }

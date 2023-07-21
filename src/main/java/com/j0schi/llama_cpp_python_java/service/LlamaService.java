@@ -62,21 +62,39 @@ public class LlamaService {
 
         // Создаем HttpEntity с JSON телом запроса и заголовками
         HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+        String response = "";
+        do {
 
-        // Выполняем POST-запрос с использованием RestTemplate.exchange()
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+            // Выполняем POST-запрос с использованием RestTemplate.exchange()
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
-        // Получаем тело ответа
-        String response = responseEntity.getBody();
+            // Получаем тело ответа
+            response = responseEntity.getBody();
 
-        response = assembleString(response);
+            response = assembleString(response);
+
+        } while (!containsLetters(response));
 
         log.info(response);
 
         return response;
     }
 
-    public static String assembleString(String data) {
+    public static boolean containsLetters(String input) {
+        if (input == null || input.isEmpty()) {
+            return false;
+        }
+
+        for (char c : input.toCharArray()) {
+            if (Character.isLetter(c)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public String assembleString(String data) {
         StringBuilder stringBuilder = new StringBuilder();
         String[] lines = data.split("\n");
 
